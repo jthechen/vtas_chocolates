@@ -25,7 +25,7 @@ if archivo_ventas:
         with st.spinner("Enviando datos a n8n y calculando pronóstico..."):
 
             # --- AQUÍ DEBES PEGAR TU TEST URL DE N8N ---
-            n8n_webhook_url = "PEGAR_AQUI_LA_URL_TEST_DEL_WEBHOOK"
+            n8n_webhook_url = "https://jthechen.app.n8n.cloud/webhook-test/192e7443-2079-4375-9c11-de9fdf6865c4"
 
             # Preparar el archivo para el envío
             # Volvemos al inicio del archivo tras leerlo para el dataframe
