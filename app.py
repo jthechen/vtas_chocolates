@@ -136,7 +136,7 @@ if archivo_ventas:
 
             try:
                 # Enviar solicitud POST al Webhook
-                respuesta = requests.post(n8n_webhook_url, files=files, timeout=60)
+                respuesta = requests.post(n8n_webhook_url, files=files, timeout=150)
 
                 if respuesta.status_code == 200:
                     st.success("✅ ¡Flujo ejecutado con éxito!")
