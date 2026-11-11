@@ -39,7 +39,7 @@ if archivo_ventas:
             st.dataframe(df_diario.head(3))
 
             # --- AQUÍ DEBES PEGAR TU TEST URL DE N8N ---
-            n8n_webhook_url = "https://jthechen.app.n8n.cloud/webhook-test/192e7443-2079-4375-9c11-de9fdf6865c4"
+            n8n_webhook_url = "https://jthechen.app.n8n.cloud/webhook/192e7443-2079-4375-9c11-de9fdf6865c4"
 
             # Preparar el archivo transformado para el envío creando un CSV en memoria
             csv_buffer = io.BytesIO()
