@@ -100,7 +100,6 @@ N8N_WEBHOOK_URL = "https://jthechen.app.n8n.cloud/webhook/192e7443-2079-4375-9c1
 tab_ingesta, tab_analisis, tab_simulador = st.tabs([
     "📥 1. Ingesta Dinámica", 
     "📈 2. Análisis Histórico & Predicción", 
-    "📦 3. Simulador de Sucursales"
 ])
 
 # =========================================================
@@ -226,46 +225,3 @@ with tab_analisis:
         
         fig = px.line(df_grouped, x='order_date', y=['revenue', 'profit'], title=f"Ingresos y Ganancias ({frecuencia})", markers=True)
         st.plotly_chart(fig, use_container_width=True)
-
-# =========================================================
-# PESTAÑA 3: SIMULADOR & SUCURSALES
-# =========================================================
-with tab_simulador:
-    st.header("📦 Simulador de Inventario & Distribución Táctica")
-    
-    demanda_proyectada = float(st.session_state["resultado_n8n"].get("demanda_total_7_dias", 28639.25)) if st.session_state["resultado_n8n"] else 28639.25
-    
-    st.markdown('<div class="css-card">', unsafe_allow_html=True)
-    col_a, col_b = st.columns(2)
-    with col_a:
-        st.subheader("Ajuste What-If")
-        demanda_base = st.number_input("Pronóstico Base (7 días)", value=demanda_proyectada, disabled=True)
-        stock_bodega = st.number_input("Inventario Físico Actual", min_value=0, value=5000, step=500)
-        pct_seguridad = st.slider("Stock de Seguridad (%)", min_value=0, max_value=30, value=10)
-        
-        demanda_con_seguridad = demanda_base * (1 + (pct_seguridad / 100))
-        orden_compra_final = max(0.0, demanda_con_seguridad - stock_bodega)
-    with col_b:
-        st.subheader("Recomendación de Compra")
-        st.metric("Demanda Total (con seguridad)", f"{demanda_con_seguridad:,.0f} unds")
-        st.metric("Orden Neta Sugerida", f"{orden_compra_final:,.0f} unds", delta=f"{orden_compra_final - demanda_base:,.0f} vs Base")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.subheader("Desagregación por Sucursal")
-    tiendas = [f"S{str(i).zfill(3)}" for i in range(1, 11)]
-    pesos = {}
-    cols_tiendas = st.columns(5)
-    
-    for idx, tienda in enumerate(tiendas):
-        with cols_tiendas[idx % 5]:
-            pesos[tienda] = st.number_input(f"{tienda} (%)", min_value=0, max_value=100, value=10, key=f"t_{tienda}")
-            
-    if sum(pesos.values()) == 100:
-        df_dist = pd.DataFrame({
-            "Tienda": list(pesos.keys()),
-            "Unidades": [orden_compra_final * (p / 100) for p in pesos.values()]
-        })
-        fig_bar = px.bar(df_dist, x="Tienda", y="Unidades", title="Distribución Propuesta")
-        st.plotly_chart(fig_bar, use_container_width=True)
-    else:
-        st.warning(f"⚠️ La suma de asignaciones es {sum(pesos.values())}%. Debe sumar exactamente 100%.")
