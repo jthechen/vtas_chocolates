@@ -4,7 +4,7 @@ import pandas as pd
 import io
 import plotly.express as px
 
-# 1. Configuración de la página (Heredado de app-2.py)
+# 1. Configuración de la página
 st.set_page_config(
     page_title="🍫 Dashboard Integral - Chocolatería",
     page_icon="🍫",
@@ -95,21 +95,21 @@ if "df_transaccional" not in st.session_state:
 N8N_WEBHOOK_URL = "https://jthechen.app.n8n.cloud/webhook/192e7443-2079-4375-9c11-de9fdf6865c4"
 
 # ---------------------------------------------------------
-# NAVEGACIÓN POR PESTAÑAS
+# NAVEGACIÓN POR PESTAÑAS (Pestaña 3 eliminada)
 # ---------------------------------------------------------
-tab_ingesta, tab_analisis, tab_simulador = st.tabs([
+tab_ingesta, tab_analisis = st.tabs([
     "📥 1. Ingesta Dinámica", 
-    "📈 2. Análisis Histórico & Predicción", 
+    "📈 2. Análisis Histórico & Predicción"
 ])
 
 # =========================================================
-# PESTAÑA 1: INGESTA DINÁMICA DE VENTAS (Diseño app-2.py)
+# PESTAÑA 1: INGESTA DINÁMICA DE VENTAS
 # =========================================================
 with tab_ingesta:
     with st.container():
         st.markdown('<div class="css-card">', unsafe_allow_html=True)
         st.subheader("📥 Cargar Transacciones Diarias")
-        st.write("Sube el archivo CSV con los registros recientes para actualizar automáticamente la base histórica y ejecutar la predicción de demanda.")
+        st.write("Sube el archivo CSV o Excel con los registros recientes para actualizar automáticamente la base histórica y ejecutar la predicción de demanda.")
         
         archivo_ventas = st.file_uploader("Arrastra y suelta tu archivo CSV o Excel aquí", type=["csv", "xlsx"])
         st.markdown('</div>', unsafe_allow_html=True)
@@ -211,17 +211,22 @@ with tab_analisis:
 
     st.markdown("---")
     
-    if df_trans is not None and 'order_date' in df_trans.columns and 'revenue' in df_trans.columns:
-        st.subheader("📊 Análisis Histórico por Períodos")
-        df_trans['order_date'] = pd.to_datetime(df_trans['order_date'])
-        
-        frecuencia = st.radio("Agrupar Evolución Temporal por:", ["Día", "Semana"], horizontal=True)
-        freq_code = 'D' if frecuencia == "Día" else 'W-MON'
-        
-        df_grouped = df_trans.groupby(pd.Grouper(key='order_date', freq=freq_code)).agg({
-            'revenue': 'sum',
-            'profit': 'sum'
-        }).reset_index()
-        
-        fig = px.line(df_grouped, x='order_date', y=['revenue', 'profit'], title=f"Ingresos y Ganancias ({frecuencia})", markers=True)
-        st.plotly_chart(fig, use_container_width=True)
+    # Validar que sea un archivo transaccional antes de procesar gráficos de revenue
+    if df_trans is not None:
+        columnas_esperadas = ['order_date', 'revenue', 'profit', 'quantity']
+        if all(col in df_trans.columns for col in columnas_esperadas):
+            st.subheader("📊 Análisis Histórico por Períodos")
+            df_trans['order_date'] = pd.to_datetime(df_trans['order_date'])
+            
+            frecuencia = st.radio("Agrupar Evolución Temporal por:", ["Día", "Semana"], horizontal=True)
+            freq_code = 'D' if frecuencia == "Día" else 'W-MON'
+            
+            df_grouped = df_trans.groupby(pd.Grouper(key='order_date', freq=freq_code)).agg({
+                'revenue': 'sum',
+                'profit': 'sum'
+            }).reset_index()
+            
+            fig = px.line(df_grouped, x='order_date', y=['revenue', 'profit'], title=f"Ingresos y Ganancias ({frecuencia})", markers=True)
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.caption("Carga un archivo transaccional completo (con ingresos y márgenes) para habilitar gráficos detallados de ventas.")
