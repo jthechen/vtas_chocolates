@@ -219,7 +219,7 @@ def cargar_ventas_historicas(url, token):
 # 5. PESTAÑAS
 # =========================================================
 tab_ingesta, tab_analisis = st.tabs(
-    ["📥 1. Ingesta Dinámica", "📈 2. Análisis Histórico & Predicción"]
+    ["📥 1. Ingesta Dinámica", "📈 2. Análisis Histórico"]
 )
 
 # =========================================================
