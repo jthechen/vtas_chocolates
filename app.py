@@ -286,6 +286,7 @@ with tab_ingesta:
                                 resultado = extraer_json_respuesta(respuesta_pronostico)
 
                             st.session_state["resultado_n8n"] = resultado
+                            st.write("Respuesta recibida desde n8n:", resultado)
                             st.session_state["error_detalle"] = error_detalle
                             st.session_state["mensaje_ingesta"] = (
                                 "Pronóstico ejecutado. "
