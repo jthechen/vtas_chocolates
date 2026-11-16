@@ -320,34 +320,7 @@ with tab_ingesta:
 # PESTAÑA 2: DASHBOARD HISTÓRICO Y PRONÓSTICO
 # =========================================================
 with tab_analisis:
-    st.header("📈 Centro de Control & Resultados")
-
-    resultado = st.session_state["resultado_n8n"]
-    if resultado:
-        metricas = resultado.get("metricas_modelo_seleccionado", {}) or {}
-        cols = st.columns(4)
-        cols[0].metric("Fecha de corte", str(resultado.get("fecha_corte", "N/A")))
-        cols[1].metric(
-            "Demanda estimada (7 días)",
-            f"{float(resultado.get('demanda_total_7_dias', 0) or 0):,.2f} unds",
-        )
-        cols[2].metric("Modelo", str(resultado.get("modelo_seleccionado", "N/A")))
-        cols[3].metric(
-            "MAE / RMSE",
-            f"{metricas.get('MAE', 'N/A')} / {metricas.get('RMSE', 'N/A')}",
-        )
-
-        st.subheader("🤖 Diagnóstico de IA")
-        st.info(
-            f"**Prioridad:** {str(resultado.get('prioridad', 'N/A')).upper()}\n\n"
-            f"**Diagnóstico:** {resultado.get('diagnostico', '')}\n\n"
-            f"**Recomendación:** {resultado.get('recomendacion', '')}"
-        )
-    else:
-        st.info("Ejecuta el flujo desde la pestaña de Ingesta para mostrar el pronóstico.")
-
-    st.markdown("---")
-    st.subheader("📊 Ventas históricas")
+        st.subheader("📊 Ventas históricas")
 
     df_historial = None
     if N8N_DASHBOARD_WEBHOOK_URL.strip():
