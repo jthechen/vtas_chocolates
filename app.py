@@ -330,8 +330,8 @@ with tab_analisis:
                 N8N_DASHBOARD_WEBHOOK_URL,
                 N8N_WEBHOOK_TOKEN,
             )
-        except requests.exceptions.RequestException as exc:
-            st.warning(f"No pude leer el historial desde n8n: {exc}")
+        except requests.exceptions.RequestException:
+    pass
         except (ValueError, KeyError) as exc:
             st.warning(f"La respuesta del Webhook de Dashboard no es válida: {exc}")
     else:
@@ -344,7 +344,6 @@ with tab_analisis:
     if df_historial is None or df_historial.empty:
         df_historial = st.session_state["df_transaccional"]
         if df_historial is not None:
-            st.info("Mostrando el archivo cargado en esta sesión; todavía no es el historial acumulado.")
 
     if df_historial is None or df_historial.empty:
         st.info("Carga un archivo de ventas o configura el Webhook GET del Dashboard.")
