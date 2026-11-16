@@ -385,18 +385,6 @@ with tab_analisis:
             else:
                 k2.metric("Ingresos", "Sin columna de monto/precio")
 
-            if "producto" in df_periodo.columns and not df_periodo.empty:
-                ranking = (
-                    df_periodo.groupby("producto", dropna=True)["cantidad"]
-                    .sum()
-                    .sort_values(ascending=False)
-                )
-                producto_top = str(ranking.index[0]) if not ranking.empty else "N/A"
-                k3.metric("Producto más vendido", producto_top)
-            else:
-                ranking = pd.Series(dtype="float64")
-                k3.metric("Producto más vendido", "Sin columna de producto")
-
             frecuencia = st.radio(
                 "Agrupar evolución temporal por:",
                 ["Día", "Semana", "Mes"],
