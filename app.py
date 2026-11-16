@@ -331,7 +331,7 @@ with tab_analisis:
                 N8N_WEBHOOK_TOKEN,
             )
         except requests.exceptions.RequestException:
-    pass
+            pass
         except (ValueError, KeyError) as exc:
             st.warning(f"La respuesta del Webhook de Dashboard no es válida: {exc}")
     else:
