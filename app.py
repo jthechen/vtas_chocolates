@@ -343,7 +343,6 @@ with tab_analisis:
 
     if df_historial is None or df_historial.empty:
         df_historial = st.session_state["df_transaccional"]
-        if df_historial is not None:
 
     if df_historial is None or df_historial.empty:
         st.info("Carga un archivo de ventas o configura el Webhook GET del Dashboard.")
