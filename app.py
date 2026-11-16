@@ -131,6 +131,7 @@ def preparar_transacciones(df_original):
             df["fecha"],
             errors="coerce",
             dayfirst=False
+        )
     if "cantidad" in df.columns:
         df["cantidad"] = pd.to_numeric(df["cantidad"], errors="coerce")
     for col in ["ingreso", "precio_unitario", "ganancia"]:
