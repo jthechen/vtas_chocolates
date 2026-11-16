@@ -440,3 +440,59 @@ with tab_analisis:
                     title=f"Ingresos estimados por {frecuencia.lower()}",
                 )
                 st.plotly_chart(fig_ingresos, use_container_width=True)
+        resultado = st.session_state.get("resultado_n8n")
+
+    if resultado:
+        st.subheader("🔮 Pronóstico de la última carga")
+
+        hw = resultado.get("holt_winters", {})
+        gru = resultado.get("gru", {})
+
+        if not hw and not gru:
+            st.warning(
+                "n8n respondió, pero no devolvió los resultados de los modelos. "
+                "Revisa el objeto que recibe Respond to Webhook."
+            )
+            st.json(resultado)
+        else:
+            if resultado.get("fecha_corte"):
+                st.caption(
+                    f"Fecha de corte: {resultado['fecha_corte']} · "
+                    f"Horizonte: {resultado.get('horizonte_dias', 'N/D')} días"
+                )
+
+            col_hw, col_gru = st.columns(2)
+
+            with col_hw:
+                st.markdown("**Holt-Winters**")
+                st.metric(
+                    "Demanda estimada (7 días)",
+                    f"{hw.get('demanda_total_7_dias', 'N/D')} unidades",
+                )
+                metricas_hw = hw.get("metricas_test", {})
+                if metricas_hw:
+                    st.caption(
+                        f"MAE: {metricas_hw.get('MAE', 'N/D')} · "
+                        f"RMSE: {metricas_hw.get('RMSE', 'N/D')}"
+                    )
+
+            with col_gru:
+                st.markdown("**GRU**")
+                st.metric(
+                    "Demanda estimada (7 días)",
+                    f"{gru.get('demanda_total_7_dias', 'N/D')} unidades",
+                )
+                metricas_gru = gru.get("metricas_test", {})
+                if metricas_gru:
+                    st.caption(
+                        f"MAE: {metricas_gru.get('MAE', 'N/D')} · "
+                        f"RMSE: {metricas_gru.get('RMSE', 'N/D')}"
+                    )
+
+            if resultado.get("diagnostico"):
+                st.markdown("**Diagnóstico**")
+                st.write(resultado["diagnostico"])
+
+            if resultado.get("recomendacion"):
+                st.markdown("**Recomendación**")
+                st.write(resultado["recomendacion"])
