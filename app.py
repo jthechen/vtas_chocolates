@@ -127,7 +127,10 @@ def preparar_transacciones(df_original):
     df = df.rename(columns=renombrar)
 
     if "fecha" in df.columns:
-        df["fecha"] = pd.to_datetime(df["fecha"], errors="coerce", dayfirst=True)
+        df["fecha"] = pd.to_datetime(
+            df["fecha"],
+            errors="coerce",
+            dayfirst=False
     if "cantidad" in df.columns:
         df["cantidad"] = pd.to_numeric(df["cantidad"], errors="coerce")
     for col in ["ingreso", "precio_unitario", "ganancia"]:
