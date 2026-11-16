@@ -495,3 +495,30 @@ with tab_analisis:
             if resultado.get("recomendacion"):
                 st.markdown("**Recomendación**")
                 st.write(resultado["recomendacion"])
+                
+        transformer = resultado.get("transformer", {})
+
+        if transformer:
+            st.markdown("### 🗣️ Análisis de sentimiento (BERT)")
+            st.caption(
+                f"Modelo: {transformer.get('modelo', 'N/D')} · "
+                f"Tarea: {transformer.get('tarea', 'N/D')}"
+            )
+
+            c1, c2, c3, c4 = st.columns(4)
+            c1.metric("Reseñas analizadas", transformer.get("total_resenas", "N/D"))
+            c2.metric(
+                "Positivas",
+                f"{transformer.get('positivas', 'N/D')} "
+                f"({transformer.get('porcentaje_positivo', 'N/D')}%)",
+            )
+            c3.metric(
+                "Neutrales",
+                f"{transformer.get('neutrales', 'N/D')} "
+                f"({transformer.get('porcentaje_neutral', 'N/D')}%)",
+            )
+            c4.metric(
+                "Negativas",
+                f"{transformer.get('negativas', 'N/D')} "
+                f"({transformer.get('porcentaje_negativo', 'N/D')}%)",
+            )
