@@ -297,6 +297,8 @@ with tab_ingesta:
                                     "También falló el guardado del detalle. "
                                     f"Error del Webhook de detalle: {error_detalle}"
                                 )
+                    except (ValueError, KeyError) as exc:
+                        st.error(f"No pude preparar la serie diaria: {exc}")
         except Exception as exc:
             st.error(f"No pude leer el archivo. Revisa su formato y encabezados. Detalle: {exc}")
 
