@@ -440,21 +440,3 @@ with tab_analisis:
                     title=f"Ingresos estimados por {frecuencia.lower()}",
                 )
                 st.plotly_chart(fig_ingresos, use_container_width=True)
-
-ranking = (
-    df.groupby("producto")["cantidad"]
-      .sum()
-      .sort_values(ascending=False)
-)
-
-if not ranking.empty:
-    top_productos = ranking.head(10).rename("unidades").reset_index()
-    fig_productos = px.bar(
-        top_productos,
-        x="producto",
-        y="unidades",
-        title="Productos más vendidos (top 10)",
-    )
-    st.plotly_chart(fig_productos, use_container_width=True)
-else:
-    st.info("No hay ventas para mostrar.")
