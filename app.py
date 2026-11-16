@@ -83,6 +83,8 @@ if "df_transaccional" not in st.session_state:
     st.session_state["df_transaccional"] = None
 if "mensaje_ingesta" not in st.session_state:
     st.session_state["mensaje_ingesta"] = None
+if "error_detalle" not in st.session_state:
+    st.session_state["error_detalle"] = None
 
 # =========================================================
 # 4. FUNCIONES AUXILIARES
@@ -167,7 +169,12 @@ def enviar_csv_a_webhook(url, nombre_archivo, dataframe):
         headers=headers_n8n(),
         timeout=REQUEST_TIMEOUT,
     )
-    respuesta.raise_for_status()
+    if not respuesta.ok:
+        cuerpo = respuesta.text[:1500]
+        raise requests.HTTPError(
+            f"HTTP {respuesta.status_code} del Webhook: {cuerpo}",
+            response=respuesta,
+        )
     return respuesta
 
 
@@ -251,47 +258,57 @@ with tab_ingesta:
                         st.markdown("#### Serie diaria enviada al modelo")
                         st.dataframe(df_diario.head(10), use_container_width=True)
 
+                        error_detalle = None
                         with st.spinner("Guardando transacciones detalladas en n8n..."):
                             # Llamada 1: envía el detalle original para Ventas_Detalle.
-                            respuesta_detalle = enviar_csv_a_webhook(
-                                N8N_DETAIL_WEBHOOK_URL.strip(),
-                                "ventas_detalle.csv",
-                                df_original,
+                            # Si falla, guardamos el error pero igual intentamos el pronóstico.
+                            try:
+                                enviar_csv_a_webhook(
+                                    N8N_DETAIL_WEBHOOK_URL.strip(),
+                                    "ventas_detalle.csv",
+                                    df_original,
+                                )
+                            except requests.exceptions.RequestException as exc:
+                                error_detalle = str(exc)
+
+                        try:
+                            with st.spinner("Ejecutando el pronóstico en n8n..."):
+                                # Llamada 2: webhook actual con la serie diaria agrupada.
+                                respuesta_pronostico = enviar_csv_a_webhook(
+                                    N8N_FORECAST_WEBHOOK_URL.strip(),
+                                    "ventas_agrupadas.csv",
+                                    df_diario,
+                                )
+                                resultado = extraer_json_respuesta(respuesta_pronostico)
+
+                            st.session_state["resultado_n8n"] = resultado
+                            st.session_state["error_detalle"] = error_detalle
+                            st.session_state["mensaje_ingesta"] = (
+                                "Pronóstico ejecutado. "
+                                "El Dashboard se actualizará con la respuesta de n8n."
                             )
+                            st.cache_data.clear()
+                            st.rerun()
 
-                        if respuesta_detalle.status_code not in (200, 201, 202):
-                            raise requests.HTTPError(
-                                f"Webhook de detalle respondió {respuesta_detalle.status_code}: "
-                                f"{respuesta_detalle.text}"
-                            )
-
-                        with st.spinner("Ejecutando el pronóstico en n8n..."):
-                            # Llamada 2: conserva el webhook actual y envía la serie agrupada.
-                            respuesta_pronostico = enviar_csv_a_webhook(
-                                N8N_FORECAST_WEBHOOK_URL.strip(),
-                                "ventas_agrupadas.csv",
-                                df_diario,
-                            )
-                            respuesta_pronostico.raise_for_status()
-                            resultado = extraer_json_respuesta(respuesta_pronostico)
-
-                        st.session_state["resultado_n8n"] = resultado
-                        st.session_state["mensaje_ingesta"] = (
-                            "Ventas detalladas guardadas y pronóstico ejecutado correctamente."
-                        )
-                        st.cache_data.clear()
-                        st.success(st.session_state["mensaje_ingesta"])
-                        st.rerun()
-
-                    except requests.exceptions.RequestException as exc:
-                        st.error(f"Error al conectar con n8n: {exc}")
-                    except (ValueError, KeyError) as exc:
-                        st.error(str(exc))
+                        except (requests.exceptions.RequestException, ValueError, KeyError) as exc:
+                            st.error(f"Falló el Webhook de pronóstico: {exc}")
+                            if error_detalle:
+                                st.warning(
+                                    "También falló el guardado del detalle. "
+                                    f"Error del Webhook de detalle: {error_detalle}"
+                                )
         except Exception as exc:
             st.error(f"No pude leer el archivo. Revisa su formato y encabezados. Detalle: {exc}")
 
     if st.session_state["mensaje_ingesta"]:
-        st.success(st.session_state["mensaje_ingesta"])
+        if st.session_state["error_detalle"]:
+            st.warning(
+                st.session_state["mensaje_ingesta"]
+                + " Sin embargo, no se pudo guardar el detalle en Ventas_Detalle: "
+                + st.session_state["error_detalle"]
+            )
+        else:
+            st.success(st.session_state["mensaje_ingesta"])
 
 # =========================================================
 # PESTAÑA 2: DASHBOARD HISTÓRICO Y PRONÓSTICO
