@@ -17,7 +17,7 @@ st.set_page_config(
 
 # Pega aquí las Production URLs que muestra cada nodo Webhook de n8n.
 # 1) Webhook POST que guarda transacciones originales en Ventas_Detalle.
-N8N_DETAIL_WEBHOOK_URL = "https://jthechen.app.n8n.cloud/webhook/https://jthechen.app.n8n.cloud/webhook/ventas-detalle"
+N8N_DETAIL_WEBHOOK_URL = "https://jthechen.app.n8n.cloud/webhook/ventas-detalle"
 # 2) Webhook POST actual que recibe la serie diaria y ejecuta el pronóstico.
 N8N_FORECAST_WEBHOOK_URL = "https://jthechen.app.n8n.cloud/webhook/192e7443-2079-4375-9c11-de9fdf6865c4"
 # 3) (Recomendado) Webhook GET que devuelve el historial guardado en Sheets.
