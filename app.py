@@ -320,7 +320,7 @@ with tab_ingesta:
 # PESTAÑA 2: DASHBOARD HISTÓRICO Y PRONÓSTICO
 # =========================================================
 with tab_analisis:
-        st.subheader("📊 Ventas históricas")
+    st.subheader("📊 Ventas históricas")
 
     df_historial = None
     if N8N_DASHBOARD_WEBHOOK_URL.strip():
