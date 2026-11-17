@@ -17,12 +17,12 @@ st.set_page_config(
 
 # Pega aquí las Production URLs que muestra cada nodo Webhook de n8n.
 # 1) Webhook POST que guarda transacciones originales en Ventas_Detalle.
-N8N_DETAIL_WEBHOOK_URL = "https://jthechen.app.n8n.cloud/webhook/ventas-detalle"
+N8N_DETAIL_WEBHOOK_URL = "https://vcornejo.app.n8n.cloud/webhook/ventas-detalle"
 # 2) Webhook POST actual que recibe la serie diaria y ejecuta el pronóstico.
-N8N_FORECAST_WEBHOOK_URL = "https://jthechen.app.n8n.cloud/webhook/192e7443-2079-4375-9c11-de9fdf6865c4"
+N8N_FORECAST_WEBHOOK_URL = "https://vcornejo.app.n8n.cloud/webhook/192e7443-2079-4375-9c11-de9fdf6865c4"
 # 3) (Recomendado) Webhook GET que devuelve el historial guardado en Sheets.
 #    Debe responder JSON con esta forma: {"ventas": [{...}, {...}]}
-N8N_DASHBOARD_WEBHOOK_URL = "https://jthechen.app.n8n.cloud/webhook/456e80f2-09d7-420a-b58a-d703ab69f64c"
+N8N_DASHBOARD_WEBHOOK_URL = "https://vcornejo.app.n8n.cloud/webhook/456e80f2-09d7-420a-b58a-d703ab69f64c"
 
 # Déjalo vacío si no configuraste Header Auth en los Webhooks.
 # Si sí configuraste Header Auth, pega aquí el valor compartido con n8n.
