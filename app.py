@@ -28,7 +28,7 @@ N8N_DASHBOARD_WEBHOOK_URL = "https://vcornejo.app.n8n.cloud/webhook-test/456e80f
 # Si sí configuraste Header Auth, pega aquí el valor compartido con n8n.
 N8N_WEBHOOK_TOKEN = ""
 
-REQUEST_TIMEOUT = 180
+REQUEST_TIMEOUT = 250
 
 # =========================================================
 # 2. ESTILO
@@ -204,7 +204,7 @@ def cargar_ventas_historicas(url, token):
     if not url.strip():
         return None
     headers = {"X-Webhook-Token": token} if token.strip() else {}
-    respuesta = requests.get(url.strip(), headers=headers, timeout=60)
+    respuesta = requests.get(url.strip(), headers=headers, timeout=250)
     respuesta.raise_for_status()
     datos = respuesta.json()
     if isinstance(datos, dict):
